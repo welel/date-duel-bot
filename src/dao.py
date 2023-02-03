@@ -19,7 +19,7 @@ class HistoricalEventDao:
     def __init__(self, data_source: Database):
         self.data_source = data_source[self.collection_name]
 
-    def all(self) -> List:
+    def all(self) -> List[HistoricalEvent]:
         return [HistoricalEvent(**event) for event in self.data_source.find()]
 
 
@@ -57,18 +57,20 @@ class PlayerDao:
         return Player(**player)
 
     def save_many(self, players: List[Player]):
-        if players:
-            update_objects = [
-                ReplaceOne(
-                    {"_id": player._id},
-                    {
-                        "current_event": player.current_event,
-                        "guessed_events": player.guessed_events,
-                        "attempts": player.attempts,
-                        "score": player.score,
-                    },
-                    upsert=True,
-                )
-                for player in players
-            ]
-            self.data_source.bulk_write(update_objects)
+        if not players:
+            return
+
+        update_objects = [
+            ReplaceOne(
+                {"_id": player._id},
+                {
+                    "current_event": player.current_event,
+                    "guessed_events": player.guessed_events,
+                    "attempts": player.attempts,
+                    "score": player.score,
+                },
+                upsert=True,
+            )
+            for player in players
+        ]
+        self.data_source.bulk_write(update_objects)

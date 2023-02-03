@@ -65,13 +65,10 @@ class GuessGame:
     def surrender(self, player: Player) -> HistoricalEvent:
         event = self.events[player.current_event]
         player.current_event = None
+        player.score -= 10
         self.players[player._id] = player
         return event
 
     def cancel(self, player: Player):
         player.current_event = None
         self.players[player._id] = player
-
-
-if __name__ == "__main__":
-    game = GuessGame()

@@ -7,10 +7,28 @@ from dotenv import load_dotenv
 # Parse a `.env` file and load the variables inside into environment variables
 load_dotenv()
 
-BASE_PATH = Path(__file__).resolve().parent.parent
-RESOURCES_PATH = os.path.join(BASE_PATH, "res/")
 
-BOT_TOKEN: str = os.getenv("BOT_TOKEN")
+class ImproperlyConfigured(Exception):
+    """Raises when a environment variable is missing."""
 
-MONGO_CONNECTION_STRING: str = os.getenv("MONGO_CONNECTION")
-MONGO_DATABASE_NAME: str = os.getenv("MONGO_DATABASE_NAME")
+    def __init__(self, variable_name, *args, **kwargs):
+        self.variable_name = variable_name
+        self.message = f"Set the {variable_name} environment variable."
+        super().__init__(self.message, *args, **kwargs)
+
+
+def get_env_variable(var_name: str) -> str:
+    """Get an environment variable or raise an exception."""
+    try:
+        return os.environ[var_name]
+    except KeyError:
+        raise ImproperlyConfigured(var_name)
+
+
+BASE_PATH: str = Path(__file__).resolve().parent.parent
+RESOURCES_PATH: str = os.path.join(BASE_PATH, "res/")
+
+BOT_TOKEN: str = get_env_variable("BOT_TOKEN")
+
+MONGO_CONNECTION_STRING: str = get_env_variable("MONGO_CONNECTION")
+MONGO_DATABASE_NAME: str = get_env_variable("MONGO_DATABASE_NAME")

@@ -1,5 +1,11 @@
+import os
+
 from dataclasses import dataclass, field
 from typing import List, Optional
+
+from aiogram.types import FSInputFile
+
+from config import BASE_PATH
 
 
 @dataclass
@@ -10,6 +16,10 @@ class Player:
     attempts: int = 0
     score: int = 0
 
+    @property
+    def in_game(self) -> bool:
+        return isinstance(self.current_event, int)
+
 
 @dataclass
 class HistoricalEvent:
@@ -19,3 +29,11 @@ class HistoricalEvent:
     date: int
     description: Optional[str] = None
     image_path: Optional[str] = None
+
+    def get_image_file(self) -> Optional[FSInputFile]:
+        if self.image_path:
+            path = os.path.join(BASE_PATH, self.image_path)
+            return FSInputFile(path) if os.path.isfile(path) else None
+
+    def explain(self) -> str:
+        return "{} г. - {}.".format(self.date, self.event)
