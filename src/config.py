@@ -1,3 +1,4 @@
+"""Module to manage the project configuration settings."""
 import os
 from pathlib import Path
 
@@ -18,7 +19,17 @@ class ImproperlyConfigured(Exception):
 
 
 def get_env_variable(var_name: str) -> str:
-    """Get an environment variable or raise an exception."""
+    """Get an environment variable or raise an exception.
+
+    Args:
+        var_name: a name of a environment variable.
+
+    Returns:
+        A value of the environment variable.
+
+    Raises:
+        ImproperlyConfigured: if the environment variable is not set.
+    """
     try:
         return os.environ[var_name]
     except KeyError:
