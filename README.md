@@ -43,8 +43,8 @@ pip install -r requirements/local.txt
 
 **Структура MongoDB:**
 
-```json
-Collection - HistoricalEvents
+```js
+// Collection - HistoricalEvents
 {
   "_id": 0, // Уникальное
   "_type": "date",
@@ -54,7 +54,7 @@ Collection - HistoricalEvents
   "image_path": "res/images/date-0.jpg" // Опциональное
 }
 
-Collection - Players
+// Collection - Players
 {
   "_id": {
     "$numberLong": "6855231396" // Уникальное (tg user id)
