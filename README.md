@@ -74,6 +74,3 @@ pip install -r requirements/local.txt
 python bot.py
 ```
 
-## Лицензия
-
-Этот проект находится под лицензией MIT License — подробности см. в файле LICENSE.md.
