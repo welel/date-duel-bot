@@ -1,0 +1,27 @@
+name: Game Bot Deploy
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Deploy on the server
+        uses: D3rHase/ssh-command-action@v0.2.2
+        with:
+          host: ${{secrets.SERVER_HOST}}
+          user: ${{secrets.SERVER_USER}}
+          private_key: ${{secrets.SERVER_SSH_PK}}
+          command: |
+            cd ${{secrets.PROJECT_DIR}};
+            git fetch --all;
+            git reset --hard origin/main;
+            docker compose -f docker-compose.yml down --remove-orphans;
+            docker compose -f docker-compose.yml build --no-cache;
+            docker compose -f docker-compose.yml up -d;
+            docker system prune --all --force;
