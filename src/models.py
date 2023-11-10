@@ -64,5 +64,5 @@ class HistoricalEvent:
             return FSInputFile(path) if os.path.isfile(path) else None
 
     def explain(self) -> str:
-        """Returns explanation string for event with date and shor description."""
+        """Returns explanation for event with date and short description."""
         return "{} г. - {}.".format(self.date, self.event)
