@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  bot_news_app:
+  game_app:
     build:
       context: .
       dockerfile: Dockerfile
