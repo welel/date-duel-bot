@@ -51,3 +51,7 @@ MONGO_DATABASE: str = get_env_variable("MONGO_INITDB_DATABASE")
 MONGO_CONNECTION_URI: str = (
     f"mongodb://{MONGO_USERNAME}:{MONGO_PASSWORD}@{MONGO_HOST}:{MONGO_PORT}/"
 )
+
+EVENTS_FILE_PATH: str = (
+    os.path.join(RESOURCES_PATH, get_env_variable("EVENTS_FILE_PATH"))
+)
