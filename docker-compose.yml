@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  bot_news_app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+
+  mongodb:
+    image: mongo:6-jammy
+    ports:
+      - '27017:27017'
+    env_file:
+      - .env
+    volumes:
+      - mongodb:/data/db
+
+volumes:
+  mongodb:

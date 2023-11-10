@@ -18,7 +18,7 @@ class ImproperlyConfigured(Exception):
         super().__init__(self.message, *args, **kwargs)
 
 
-def get_env_variable(var_name: str) -> str:
+def get_env_variable(var_name: str, cast=str) -> str:
     """Get an environment variable or raise an exception.
 
     Args:
@@ -31,9 +31,11 @@ def get_env_variable(var_name: str) -> str:
         ImproperlyConfigured: if the environment variable is not set.
     """
     try:
-        return os.environ[var_name]
+        return cast(os.environ[var_name])
     except KeyError:
         raise ImproperlyConfigured(var_name)
+    except TypeError:
+        raise TypeError(f"Variable {var_name} must be type {cast}.")
 
 
 BASE_PATH: str = Path(__file__).resolve().parent.parent
@@ -41,5 +43,11 @@ RESOURCES_PATH: str = os.path.join(BASE_PATH, "res/")
 
 BOT_TOKEN: str = get_env_variable("BOT_TOKEN")
 
-MONGO_CONNECTION_STRING: str = get_env_variable("MONGO_CONNECTION")
-MONGO_DATABASE_NAME: str = get_env_variable("MONGO_DATABASE_NAME")
+MONGO_HOST: str = get_env_variable("MONGO_HOST")
+MONGO_PORT: int = get_env_variable("MONGO_PORT", cast=int)
+MONGO_USERNAME: str = get_env_variable("MONGO_INITDB_ROOT_USERNAME")
+MONGO_PASSWORD: str = get_env_variable("MONGO_INITDB_ROOT_PASSWORD")
+MONGO_DATABASE: str = get_env_variable("MONGO_INITDB_DATABASE")
+MONGO_CONNECTION_URI: str = (
+    f"mongodb://{MONGO_USERNAME}:{MONGO_PASSWORD}@{MONGO_HOST}:{MONGO_PORT}/"
+)
