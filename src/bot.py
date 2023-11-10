@@ -1,5 +1,5 @@
 """
-This module implements a Telegram bot for a game of guessing dates of historical events.
+This module implements a TG bot for guessing dates of historical events.
 
 The game is initiated by sending the `/play` command, followed by guessing
 dates in response to the bot's prompts. The player can surrender by sending
@@ -181,7 +181,7 @@ async def process_date_answer(message: Message):
 
 @dp.message()
 async def process_other_text_answers(message: Message):
-    """Processes the text messages that are not associated with any specific command.
+    """Processes the text messages that are not associated with any command.
 
     If the player is in a game, they will receive a message asking them
     to provide a date in the format "YYYY".

@@ -10,7 +10,7 @@ and historical event data from the database.
 from typing import Dict, Optional, Tuple
 
 from models import HistoricalEvent, Player
-from dao import PlayerDao, HistoricalEventDao
+from dao import PlayerDao, HistoricalEventDao, ObjectDoesNotExists
 
 
 class GuessGame:
@@ -33,6 +33,8 @@ class GuessGame:
     def __init__(self, database):
         events_dao = HistoricalEventDao(database)
         self.events = {event._id: event for event in events_dao.all()}
+        if not self.events:
+            raise ValueError("Can't start the game without events.")
         self.players_dao = PlayerDao(database)
         self.players = {}
 
@@ -55,10 +57,14 @@ class GuessGame:
         Returns:
             The player instance with given id.
         """
-        player = self.players.get(player_id)
-        if not player:
+        if player := self.players.get(player_id):
+            return player
+
+        try:
             player = self.players_dao.get(player_id)
-            self.players[player_id] = player
+        except ObjectDoesNotExists:
+            player, _ = self.players_dao.create(Player(_id=player_id))
+        self.players[player_id] = player
         return player
 
     def _get_event_for_player(self, player: Player) -> HistoricalEvent:
@@ -85,7 +91,7 @@ class GuessGame:
         the player, and returns the `current_event`.
 
         Args:
-            player_id: Player's unique identifier to start a new game round with.
+            player_id: Player's unique ID to start a new game round with.
 
         Returns:
             A next historival event for guessing.
@@ -134,7 +140,8 @@ class GuessGame:
         """Ends a game round and returns the hidden event.
 
         Given a `Player` instance, updates the player's score, sets the
-        `current_event` for the player to `None`, and returns the `current_event`.
+        `current_event` for the player to `None`, and returns the
+        `current_event`.
 
         Args:
             player: A surrendered player.

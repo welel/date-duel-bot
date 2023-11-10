@@ -2,12 +2,15 @@
 
 Contains two data access objects (DAO): `HistoricalEventDao` and `PlayerDao`.
 """
+import json
+import os
 from typing import List, Tuple
 
 from pymongo import ReplaceOne
 from pymongo.database import Database
 
 from models import HistoricalEvent, Player
+from config import EVENTS_FILE_PATH
 
 
 class ObjectDoesNotExists(Exception):
@@ -38,7 +41,20 @@ class HistoricalEventDao:
         Returns:
             A list of `HistoricalEvent` objects.
         """
-        return [HistoricalEvent(**event) for event in self.data_source.find()]
+        if not os.path.isfile(EVENTS_FILE_PATH):
+            raise FileNotFoundError(
+                f"The file with events is missing by path: {EVENTS_FILE_PATH}."
+            )
+
+        try:
+            with open(EVENTS_FILE_PATH, "r") as json_file:
+                events = json.load(json_file)
+        except json.decoder.JSONDecodeError:
+            raise json.decoder.JSONDecodeError(
+                f"The events file ({EVENTS_FILE_PATH}) has bad format "
+                "(not valid JSON)."
+            )
+        return [HistoricalEvent(**event) for event in events]
 
 
 class PlayerDao:
@@ -67,7 +83,7 @@ class PlayerDao:
             The player and a bool flag - whether it was created.
         """
         player_db = self.data_source.find_one({"_id": player._id})
-        created = player_db == None
+        created = player_db is None
 
         if player_db:
             player = Player(**player_db)
@@ -84,7 +100,7 @@ class PlayerDao:
         return player, created
 
     def get(self, player_id: int) -> Player:
-        """Gets the Player object from the data source with the given player id.
+        """Gets the player from the data source with the given player id.
 
         Args:
             player_id: The id of the player to get.
